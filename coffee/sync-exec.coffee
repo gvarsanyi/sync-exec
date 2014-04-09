@@ -4,7 +4,7 @@ fs = require 'fs'
 
 tmp_dir = '/tmp'
 for name in ['TMPDIR', 'TMP', 'TEMP']
-  tmp_dir = tmp.split('/')[0] if (dir = process.env[name])?
+  tmp_dir = dir.replace /\/$/, '' if (dir = process.env[name])?
 
 create_pipes = ->
   until created

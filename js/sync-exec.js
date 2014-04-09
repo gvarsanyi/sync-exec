@@ -12,7 +12,7 @@
   for (_i = 0, _len = _ref.length; _i < _len; _i++) {
     name = _ref[_i];
     if ((dir = process.env[name]) != null) {
-      tmp_dir = tmp.split('/')[0];
+      tmp_dir = dir.replace(/\/$/, '');
     }
   }
 
