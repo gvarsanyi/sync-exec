@@ -1,10 +1,10 @@
 {
   "name": "sync-exec",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Synchronous exec with status code support. Requires no external dependencies, no need for node-gyp compilations etc.",
   "main": "js/sync-exec.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/gvarsanyi/sync-exec/issues"
   },
-  "homepage": "https://github.com/gvarsanyi/sync-exec"
+  "homepage": "https://github.com/gvarsanyi/sync-exec",
+  "devDependencies": {
+    "coffee-script": "^1.8.0"
+  }
 }

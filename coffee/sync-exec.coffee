@@ -6,49 +6,67 @@ tmp_dir = '/tmp'
 for name in ['TMPDIR', 'TMP', 'TEMP']
   tmp_dir = dir.replace /\/$/, '' if (dir = process.env[name])?
 
+
+timeout = (limit, msg) ->
+  if (new Date).getTime() > limit
+    throw new Error msg
+
 create_pipes = ->
-  now=new Date()
+  t_limit = (new Date).getTime() + 1000 # 1 second timeout
+
   until created
     try
       dir = tmp_dir + '/sync-exec-' + Math.floor Math.random() * 1000000000
       fs.mkdir dir
       created = true
-    if (new Date()-now)>1000
-      throw new Error("Can't create sync-exec directory")
+    timeout t_limit, 'Can not create sync-exec directory'
   dir
 
-read_pipes = (dir, maxWait) ->
-  now=new Date()
+
+read_pipes = (dir, max_wait) ->
+  t_limit = (new Date).getTime() + max_wait
+
   until read
     try
       read = true if fs.readFileSync(dir + '/done').length
-    if (new Date()-now)>maxWait
-      throw new Error("sync-exec Process execution timeout or exit flag read failure.")
+    timeout t_limit, 'Process execution timeout or exit flag read failure'
+
   until deleted
     try
       fs.unlinkSync dir + '/done'
       deleted = true
-    if (new Date()-now)>maxWait
-      throw new Error('Can\'t delete sync-exec exit flag file')
+    timeout t_limit, 'Can not delete exit code file'
 
   result = {}
   for pipe in ['stdout', 'stderr', 'status']
     result[pipe] = fs.readFileSync dir + '/' + pipe, encoding: 'utf-8'
     read = true
     fs.unlinkSync dir + '/' + pipe
-  fs.rmdirSync dir
+
+  try
+    fs.rmdirSync dir
+
   result.status = Number result.status
   result
 
-module.exports = (cmd, options) ->
-  maxWait=3600000
-  options = options || {}
-  if options.maxWait
-    maxWait=options.maxWait;
-    delete options.maxWait;
-  
+
+module.exports = (cmd, max_wait, options) ->
+  if max_wait and typeof max_wait is 'object'
+    [options, max_wait] = [max_wait, null]
+
+  options ?= {}
+
+  unless typeof options is 'object' and options
+    throw new Error 'options must be an object'
+
+  max_wait ?= options.max_wait or 3600000 # 1hr default
+  unless not max_wait? or max_wait >= 1
+    throw new Error 'max wait must be >=1 millisecond'
+  delete options.max_wait
+
   dir = create_pipes()
   cmd = '(' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ); echo $?' +
         ' > ' + dir + '/status ; echo 1 > ' + dir + '/done'
-  cp.exec cmd, options or {}, ->
-  read_pipes dir, maxWait
+  cp.exec cmd, options, ->
+
+  read_pipes dir, max_wait

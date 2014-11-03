@@ -1,3 +1,13 @@
+.PHONY: clean compile npm test
 
-compile:
-	coffee -o js/ coffee/
+compile: clean npm
+	node_modules/.bin/coffee -o js/ coffee/
+
+npm:
+	npm install
+
+clean:
+	rm -rf js/
+
+test: compile
+	node_modules/.bin/coffee test/example.coffee
