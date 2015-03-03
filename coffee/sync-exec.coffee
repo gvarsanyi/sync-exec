@@ -50,12 +50,37 @@ read_pipes = (dir, max_wait) ->
   result
 
 
+proxy = (cmd, max_wait, options) ->
+
+  options.timeout = max_wait
+  stdout = stderr = ''
+  status = 0
+
+  t0 = (new Date).getTime()
+
+  orig_write = process.stderr.write
+  process.stderr.write = ->
+  try
+    stdout = child_process.execSync cmd, options
+    process.stderr.write = orig_write
+  catch err
+    process.stderr.write = orig_write
+    if err.signal is 'SIGTERM' and t0 <= (new Date).getTime() - max_wait
+      throw new Error 'Timeout'
+    {stdout, stderr, status} = err
+
+  {stdout, stderr, status}
+
+
 module.exports = (cmd, max_wait, options) ->
 
   if max_wait and typeof max_wait is 'object'
     [options, max_wait] = [max_wait, null]
 
   options ?= {}
+
+  unless options.hasOwnProperty 'encoding'
+    options.encoding = 'utf8'
 
   unless typeof options is 'object' and options
     throw new Error 'options must be an object'
@@ -67,8 +92,7 @@ module.exports = (cmd, max_wait, options) ->
 
   # use native child_process.execSync if available (from node v0.12+)
   if child_process.execSync
-    options.timeout = max_wait
-    return child_process.execSync cmd, options
+    return proxy cmd, max_wait, options
 
   delete options.timeout
 

@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/gvarsanyi/sync-exec",
   "devDependencies": {
-    "coffee-script": "^1.8.0"
+    "coffee-script": "^1.9.1"
   }
 }

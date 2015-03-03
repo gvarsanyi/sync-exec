@@ -3,12 +3,15 @@ sync-exec
 
 An fs.execSync replacement until you get it natively from node 0.12+
 
+Upgrading to 0.12 is safe, at that point it will use child_process.execSync while maintaining interface compatibility.
+
+
 # Advantages
 Inspired by [exec-sync](https://www.npmjs.org/package/exec-sync) but comes with a few advantages:
 - no libc requirement (no node-gyp compilation)
 - no external dependencies
 - returns the exit status code
-- you can pass exec options
+- you can pass [execSync options](http://nodejs.org/api/child_process.html#child_process_child_process_execsync_command_options)
 - multiple commands should work pretty safely
 
 # Installation
