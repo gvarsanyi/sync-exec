@@ -65,8 +65,8 @@ module.exports = (cmd, max_wait, options) ->
   delete options.max_wait
 
   dir = create_pipes()
-  cmd = '(' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ); echo $?' +
-        ' > ' + dir + '/status ; echo 1 > ' + dir + '/done'
+  cmd = '(' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ) && echo $?' +
+        ' > ' + dir + '/status && echo 1 > ' + dir + '/done'
   cp.exec cmd, options, ->
 
   read_pipes dir, max_wait
