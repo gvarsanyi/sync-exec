@@ -1,4 +1,4 @@
-cp = require 'child_process'
+child_process = require 'child_process'
 fs = require 'fs'
 
 
@@ -51,6 +51,7 @@ read_pipes = (dir, max_wait) ->
 
 
 module.exports = (cmd, max_wait, options) ->
+
   if max_wait and typeof max_wait is 'object'
     [options, max_wait] = [max_wait, null]
 
@@ -59,14 +60,22 @@ module.exports = (cmd, max_wait, options) ->
   unless typeof options is 'object' and options
     throw new Error 'options must be an object'
 
-  max_wait ?= options.max_wait or 3600000 # 1hr default
+  max_wait ?= options.timeout or options.max_wait or 3600000 # 1hr default
   unless not max_wait? or max_wait >= 1
-    throw new Error 'max wait must be >=1 millisecond'
+    throw new Error '`options.timeout` must be >=1 millisecond'
   delete options.max_wait
 
+  # use native child_process.execSync if available (from node v0.12+)
+  if child_process.execSync
+    options.timeout = max_wait
+    return child_process.execSync cmd, options
+
+  delete options.timeout
+
   dir = create_pipes()
-  cmd = '(' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ) && echo $?' +
-        ' > ' + dir + '/status && echo 1 > ' + dir + '/done'
-  cp.exec cmd, options, ->
+  cmd = '((((' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ) ' +
+        '&& echo 0 > ' + dir + '/status) || echo 1 > ' + dir + '/status) &&' +
+        ' echo 1 > ' + dir + '/done) || echo 1 > ' + dir + '/done'
+  child_process.exec cmd, options, ->
 
   read_pipes dir, max_wait

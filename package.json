@@ -1,6 +1,6 @@
 {
   "name": "sync-exec",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Synchronous exec with status code support. Requires no external dependencies, no need for node-gyp compilations etc.",
   "main": "js/sync-exec.js",
   "scripts": {
