@@ -17,14 +17,14 @@
   }
 
   timeout = function(limit, msg) {
-    if ((new Date).getTime() > limit) {
+    if (Date.now() > limit) {
       throw new Error(msg);
     }
   };
 
   create_pipes = function() {
     var created, t_limit;
-    t_limit = (new Date).getTime() + 1000;
+    t_limit = Date.now() + 1000;
     while (!created) {
       try {
         dir = tmp_dir + '/sync-exec-' + Math.floor(Math.random() * 1000000000);
@@ -38,7 +38,7 @@
 
   read_pipes = function(dir, max_wait) {
     var deleted, j, len1, pipe, read, ref1, result, t_limit;
-    t_limit = (new Date).getTime() + max_wait;
+    t_limit = Date.now() + max_wait;
     while (!read) {
       try {
         if (fs.readFileSync(dir + '/done').length) {
@@ -76,7 +76,7 @@
     options.timeout = max_wait;
     stdout = stderr = '';
     status = 0;
-    t0 = (new Date).getTime();
+    t0 = Date.now();
     orig_write = process.stderr.write;
     process.stderr.write = function() {};
     try {
@@ -85,7 +85,7 @@
     } catch (_error) {
       err = _error;
       process.stderr.write = orig_write;
-      if (err.signal === 'SIGTERM' && t0 <= (new Date).getTime() - max_wait) {
+      if (err.signal === 'SIGTERM' && t0 <= Date.now() - max_wait) {
         throw new Error('Timeout');
       }
       stdout = err.stdout, stderr = err.stderr, status = err.status;
