@@ -123,7 +123,7 @@
     }
     delete options.timeout;
     dir = create_pipes();
-    cmd = '((((' + cmd + ' | xargs printf > ' + dir + '/stdout 2> ' + dir + '/stderr ) ' + '&& echo 0 > ' + dir + '/status) || echo 1 > ' + dir + '/status) &&' + ' echo 1 > ' + dir + '/done) || echo 1 > ' + dir + '/done';
+    cmd = '((((' + cmd + ' | xargs --no-run-if-empty printf > ' + dir + '/stdout 2> ' + dir + '/stderr ) ' + '&& echo 0 > ' + dir + '/status) || echo 1 > ' + dir + '/status) &&' + ' echo 1 > ' + dir + '/done) || echo 1 > ' + dir + '/done';
     child_process.exec(cmd, options, function() {});
     return read_pipes(dir, max_wait);
   };
