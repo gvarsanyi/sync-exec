@@ -8,11 +8,11 @@ for name in ['TMPDIR', 'TMP', 'TEMP']
 
 
 timeout = (limit, msg) ->
-  if (new Date).getTime() > limit
+  if Date.now() > limit
     throw new Error msg
 
 create_pipes = ->
-  t_limit = (new Date).getTime() + 1000 # 1 second timeout
+  t_limit = Date.now() + 1000 # 1 second timeout
 
   until created
     try
@@ -24,7 +24,7 @@ create_pipes = ->
 
 
 read_pipes = (dir, max_wait) ->
-  t_limit = (new Date).getTime() + max_wait
+  t_limit = Date.now() + max_wait
 
   until read
     try
@@ -56,7 +56,7 @@ proxy = (cmd, max_wait, options) ->
   stdout = stderr = ''
   status = 0
 
-  t0 = (new Date).getTime()
+  t0 = Date.now()
 
   orig_write = process.stderr.write
   process.stderr.write = ->
@@ -65,7 +65,7 @@ proxy = (cmd, max_wait, options) ->
     process.stderr.write = orig_write
   catch err
     process.stderr.write = orig_write
-    if err.signal is 'SIGTERM' and t0 <= (new Date).getTime() - max_wait
+    if err.signal is 'SIGTERM' and t0 <= Date.now() - max_wait
       throw new Error 'Timeout'
     {stdout, stderr, status} = err
 
