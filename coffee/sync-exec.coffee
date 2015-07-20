@@ -97,9 +97,10 @@ module.exports = (cmd, max_wait, options) ->
   delete options.timeout
 
   dir = create_pipes()
-  cmd = '((((' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ) ' +
-        '&& echo $? > ' + dir + '/status) || echo $? > ' + dir + '/status) &&' +
-        ' echo 1 > ' + dir + '/done) || echo 1 > ' + dir + '/done'
+  cmd = '((((' + cmd + ' | xargs --no-run-if-empty printf > ' + dir +
+        '/stdout 2> ' + dir + '/stderr ) ' + '&& echo $? > ' + dir +
+        '/status) || echo $? > ' + dir + '/status) &&' + ' echo 1 > ' + dir +
+        '/done) || echo 1 > ' + dir + '/done'
   child_process.exec cmd, options, ->
 
   read_pipes dir, max_wait
