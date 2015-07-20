@@ -20,7 +20,7 @@
     "status"
   ],
   "author": "Greg Varsanyi",
-  "license": "GNU GPLv2",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gvarsanyi/sync-exec/issues"
   },
