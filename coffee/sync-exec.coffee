@@ -34,16 +34,17 @@ module.exports = (cmd, max_wait, options) ->
   delete options.max_wait
 
   # use native child_process.execSync if available (from node v0.12+)
-  if child_process.execSync
+  if options.forceEmulation
+    delete options.forceEmulation
+  else if child_process.execSync
     return proxy cmd, max_wait, options
 
   delete options.timeout
 
   dir = create_pipes()
-  cmd = '((((' + cmd + ' | xargs --no-run-if-empty printf > ' + dir +
-        '/stdout 2> ' + dir + '/stderr ) ' + '&& echo $? > ' + dir +
-        '/status) || echo $? > ' + dir + '/status) &&' + ' echo 1 > ' + dir +
-        '/done) || echo 1 > ' + dir + '/done'
+  cmd = '((((' + cmd + ' > ' + dir + '/stdout 2> ' + dir + '/stderr ) ' +
+        '&& echo $? > ' + dir + '/status) || echo $? > ' + dir + '/status) &&' +
+        ' echo 1 > ' + dir + '/done) || echo 1 > ' + dir + '/done'
   child_process.exec cmd, options, ->
 
   read_pipes dir, max_wait

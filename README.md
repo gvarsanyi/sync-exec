@@ -3,7 +3,9 @@ sync-exec
 
 An fs.execSync replacement until you get it natively from node 0.12+
 
-Upgrading to 0.12 is safe, at that point it will use child_process.execSync while maintaining interface compatibility.
+Upgrading to 0.12.x is usually safe. At that point it will use child_process.execSync.
+
+You can still force the emulated version passing `{forceEmulated: true}` to the `options` argument.
 
 
 # Advantages
