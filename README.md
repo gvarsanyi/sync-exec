@@ -19,7 +19,7 @@ Inspired by [exec-sync](https://www.npmjs.org/package/exec-sync) but comes with 
 # Installation
     [sudo] npm install sync-exec
 
-# Signiture
+# Signature
     exec(cmd[, timeout][, options]);
 
 # Examples
