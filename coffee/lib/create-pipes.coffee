@@ -18,8 +18,7 @@ module.exports = ->
 
   until created
     try
-      dir = tmp_dir + '/sync-exec-' + Math.floor Math.random() * 1000000000
-      fs.mkdir dir
+      dir = fs.mkdtemp tmp_dir + '/sync-exec-'
       created = true
 
     timeout t_limit, 'Can not create sync-exec directory'
